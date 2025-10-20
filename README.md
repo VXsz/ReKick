@@ -3,25 +3,17 @@
 A command-line tool for downloading and archiving Kick VODs, including chat messages and emotes.
 # Features
 
-Downloads the VOD video file using yt-dlp.
+* Downloads the VOD video file using yt-dlp.
+* Downloads the full chat log with all of their metadata (excessive?).
+* Downloads all emotes used in the chat.
+* Resumes downloads if interrupted.
+* Saves comprehensive metadata about the VOD.
+* Provides detailed progress display during download.
+* Warns about missing dependencies or low disk space.
+* Designed with graceful exits & recovery in mind (like, actually).
+* Highly configurable through command-line flags.
 
-Downloads the full chat log with all of their metadata (excessive?).
-
-Downloads all emotes used in the chat.
-
-Resumes downloads if interrupted.
-
-Saves comprehensive metadata about the VOD.
-
-Provides detailed progress display during download.
-
-Warns about missing dependencies or low disk space.
-
-Designed with graceful exits & recovery in mind (like, actually).
-
-Highly configurable through command-line flags.
-
-> **Disclaimer**
+> [!NOTE]  
 > Large parts of this code was generated with LLMs. While I vetted and edited it, it may contain unexpected bugs.
 >
 > **Also**, the json parsing for Kick's VOD html is a bit retarded, so PRs are welcome.
@@ -34,25 +26,32 @@ You must have these to download the videos:
 2.  **ffmpeg**: This is required for merging/post-processing from yt-dlp. It must be installed and available in your system's PATH
 
 
-## Usage
+### Usage
+Grab ReKick latest: https://github.com/VXsz/ReKick/releases/latest (for windows users: rekick-v1.1.1-windows-amd64.zip)
 
-`sudo chmod +x rekick`
+Linux:
+```
+sudo chmod +x rekick
 
-`./rekick --url ""`
-
+./rekick --url ""
+```
 or if you like Bill Gates:
-
-`rekick.exe --url ""`
-
+```
+rekick.exe --url ""
+```
 (Put your VOD url inside the quotas)
-If you are on older windows termainls (like windows 10 cmd) instead of Windows Terminal, use `--simple-progress` and `--no-emoji` for non-garbled output.
+
+> [!WARNING]  
+> If you are on older windows terminals (like windows 10 cmd) instead of Windows Terminal, use `--simple-progress` and `--no-emoji` for non-garbled output.
 
 The only required flag is the full URL to the Kick VOD.
+
 This will create a new folder (e.g., channelname_12345678-a1c2-...) in the current directory containing the VOD, chat logs, and emotes.
 
 
 
 # Command-Line Flags
+Currently, ReKick doesn't offer video quality selection. You could pass `--no-vod` and download it manually with yt-dlp.
 ```
 --url                       (Required) The full URL of the Kick VOD to archive.	""
 --output                    The base directory to save the archive folder into.	.
