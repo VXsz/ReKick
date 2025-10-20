@@ -1,6 +1,9 @@
 # ReKick
 
 A command-line tool for downloading and archiving Kick VODs, including chat messages and emotes.
+
+![ReKick Demo](https://github.com/VXsz/ReKick/blob/main/rekick-demo.gif?raw=true)
+
 # Features
 
 * Downloads the VOD video file using yt-dlp.
