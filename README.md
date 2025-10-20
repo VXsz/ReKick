@@ -29,10 +29,9 @@ Highly configurable through command-line flags.
 ## Quick Start
 
 ### Prerequisites
-
-1.  **Go**: Ensure you have a recent version of Go installed.
-2.  **latest yt-dlp**: This tool is required for downloading the VOD video file. It must be installed and available in your system's PATH.
-4.  **ffmpeg**: This is required for merging/post-processing from yt-dlp. It must be installed and available in your system's PATH
+You must have these to download the videos:
+1.  **latest yt-dlp**: This tool is required for downloading the VOD video file. It must be installed and available in your system's PATH.
+2.  **ffmpeg**: This is required for merging/post-processing from yt-dlp. It must be installed and available in your system's PATH
 
 
 ## Usage
@@ -74,7 +73,7 @@ This will create a new folder (e.g., channelname_12345678-a1c2-...) in the curre
 ```
 
 ### Building
-
+Ensure you have latest version of **Go**
 ```sh
 # Clone the repository
 git clone https://github.com/VXsz/ReKick.git
