@@ -873,7 +873,7 @@ func downloadVOD(ctx context.Context, archiveDir string, metadata *VODMetadata, 
 			logz("info", EMOJI_RECYCLE, "Retry attempt %d/%d for VOD download", attempt, *ytdlpRetries)
 		}
 
-		cmd := exec.CommandContext(ctx, "yt-dlp", "--newline", "--output", outputPath, "--write-info-json", metadata.Source)
+		cmd := exec.CommandContext(ctx, "yt-dlp", "--newline", "--output", outputPath, "--write-info-json", "--write-thumbnails", metadata.Source)
 
 		stdout, _ := cmd.StdoutPipe()
 		stderr, _ := cmd.StderrPipe()
@@ -925,7 +925,7 @@ func downloadVOD(ctx context.Context, archiveDir string, metadata *VODMetadata, 
 				} else if strings.Contains(line, "[FixupM3u8]") || strings.Contains(line, "[Fixup") || strings.Contains(line, "[Merger]") {
 					logz("info", EMOJI_GEAR, "[yt-dlp] %s", line)
 					progressState.mu.Lock()
-					progressState.VODStatusMessage = "Post-processing..."
+					progressState.VODStatusMessage = "Post-processing... (Do not close, reading/writing files)"
 					progressState.mu.Unlock()
 				} else if strings.Contains(line, "[info]") {
 					logz("info", EMOJI_INFO, "[yt-dlp] %s", line)
