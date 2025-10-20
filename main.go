@@ -873,7 +873,7 @@ func downloadVOD(ctx context.Context, archiveDir string, metadata *VODMetadata, 
 			logz("info", EMOJI_RECYCLE, "Retry attempt %d/%d for VOD download", attempt, *ytdlpRetries)
 		}
 
-		cmd := exec.CommandContext(ctx, "yt-dlp", "--newline", "--output", outputPath, "--write-info-json", "--write-thumbnails", metadata.Source)
+		cmd := exec.CommandContext(ctx, "yt-dlp", "--newline", "--output", outputPath, "--write-info-json", metadata.Source)
 
 		stdout, _ := cmd.StdoutPipe()
 		stderr, _ := cmd.StderrPipe()
