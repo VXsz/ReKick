@@ -30,7 +30,7 @@ You must have these to download the videos:
 
 
 ### Usage
-Grab [ReKick latest](https://github.com/VXsz/ReKick/releases/latest) (for windows users: rekick-v1.1.1-windows-amd64.zip)
+Grab [ReKick latest](https://github.com/VXsz/ReKick/releases/latest) (for windows users: -windows-amd64.zip)
 
 Linux:
 ```
