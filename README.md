@@ -37,9 +37,14 @@ Highly configurable through command-line flags.
 
 ## Usage
 
+`sudo chmod +x rekick`
+
 `./rekick --url ""`
+
 or if you like Bill Gates:
+
 `rekick.exe --url ""`
+
 (Put your VOD url inside the quotas)
 
 The only required flag is the full URL to the Kick VOD.
@@ -47,9 +52,8 @@ This will create a new folder (e.g., channelname_12345678-a1c2-...) in the curre
 
 
 
-#Command-Line Flags
+# Command-Line Flags
 ```
-Flag	Description	Default
 --url                       (Required) The full URL of the Kick VOD to archive.	""
 --output                    The base directory to save the archive folder into.	.
 --simple-progress           Use a simple, single-line progress display without bars.	false
