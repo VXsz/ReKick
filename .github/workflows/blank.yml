@@ -1,0 +1,111 @@
+# .github/workflows/release.yml
+
+name: Release Go Binaries
+
+# This workflow runs when a new tag is pushed that matches the pattern 'v*.*.*'
+# (e.g., v1.0.0, v1.2.3)
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+# This permission is required for the action to create a release and upload assets.
+permissions:
+  contents: write
+
+jobs:
+  # The 'build' job compiles the application for multiple platforms.
+  build:
+    name: Build for ${{ matrix.goos }}/${{ matrix.goarch }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+            ext: .exe
+          - goos: windows
+            goarch: arm64
+            ext: .exe
+          - goos: darwin # macOS
+            goarch: amd64
+          - goos: darwin # macOS
+            goarch: arm64
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          # The -trimpath flag removes local file system paths from the binary.
+          # The -ldflags="-s -w" flags strip debug information, making the binary smaller.
+          go build -trimpath -ldflags="-s -w" -o "rekick${{ matrix.ext }}" .
+
+      - name: Create archive
+        run: |
+          # Create a platform-specific archive name (e.g., rekick-v1.0.0-linux-amd64.tar.gz)
+          ARCHIVE_NAME="rekick-${{ github.ref_name }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            7z a "${ARCHIVE_NAME}.zip" "rekick${{ matrix.ext }}"
+          else
+            tar -czf "${ARCHIVE_NAME}.tar.gz" "rekick${{ matrix.ext }}"
+          fi
+      
+      - name: Upload artifact
+        # This action stores the built archive temporarily, so the 'release' job can access it.
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: rekick-*.zip
+          if-no-files-found: ignore # Ignore if the file type doesn't match
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: rekick-*.tar.gz
+          if-no-files-found: ignore # Ignore if the file type doesn't match
+
+  # The 'release' job takes the compiled binaries and creates a GitHub Release.
+  release:
+    name: Create GitHub Release
+    needs: build # This job will not run until the 'build' job is complete for all matrix configurations.
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # The pattern '*' downloads artifacts from all the parallel build jobs.
+          pattern: binaries-*
+          # Merge artifacts from different jobs into a single directory.
+          merge-multiple: true
+          path: ./dist
+      
+      - name: Create Release and Upload Assets
+        env:
+          # The GITHUB_TOKEN is automatically provided by GitHub Actions.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Use the official GitHub CLI to create a release.
+          # The command uploads all files from the './dist' directory as release assets.
+          # --generate-notes automatically creates release notes from commits since the last tag.
+          # --draft creates the release as a draft, which you can review and publish manually.
+          gh release create ${{ github.ref_name }} ./dist/* \
+            --title "Release ${{ github.ref_name }}" \
+            --generate-notes \
+            --draft
