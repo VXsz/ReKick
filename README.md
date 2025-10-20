@@ -45,6 +45,7 @@ or if you like Bill Gates:
 `rekick.exe --url ""`
 
 (Put your VOD url inside the quotas)
+If you are on older windows termainls (like windows 10 cmd) instead of Windows Terminal, use `--simple-progress` and `--no-emoji` for non-garbled output.
 
 The only required flag is the full URL to the Kick VOD.
 This will create a new folder (e.g., channelname_12345678-a1c2-...) in the current directory containing the VOD, chat logs, and emotes.

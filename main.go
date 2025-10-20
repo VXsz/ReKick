@@ -23,7 +23,6 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"time"
 
 	"golang.org/x/term"
@@ -558,7 +557,11 @@ func setupLogger() {
 // setupSignalHandler captures interrupt signals (Ctrl+C) for a graceful shutdown.
 func setupSignalHandler() {
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	// Use the platform-specific shutdownSignals variable.
+	// The '...' unpacks the slice into individual arguments.
+	signal.Notify(sigChan, shutdownSignals...)
+
 	go func() {
 		<-sigChan
 		shutdownOnce.Do(func() {
@@ -790,20 +793,6 @@ func createArchiveDir(dir string) error {
 	return nil
 }
 
-func checkDiskSpace(archiveDir string, requiredBytes int64) error {
-	var stat syscall.Statfs_t
-	if err := syscall.Statfs(archiveDir, &stat); err != nil {
-		return fmt.Errorf("failed to check disk space: %v", err)
-	}
-	available := stat.Bavail * uint64(stat.Bsize)
-	required := uint64(requiredBytes)
-	if available < required {
-		return fmt.Errorf("insufficient disk space: need %s, have %s", formatBytes(requiredBytes), formatBytes(int64(available)))
-	}
-	logz("ok", EMOJI_CHECK, "Sufficient disk space available (%s required, %s available)", formatBytes(requiredBytes), formatBytes(int64(available)))
-	return nil
-}
-
 // getVODSize uses yt-dlp to estimate the required disk space for the download.
 func getVODSize(source string) (int64, error) {
 	logz("info", EMOJI_RULER, "Checking VOD size...")
@@ -845,7 +834,7 @@ func getVODSize(source string) (int64, error) {
 		return 0, nil
 	}
 
-	// Double the size to account for temporary files during post-processing.
+	// Double the size to account for temporary files during post-processing. Pain.
 	maxSize *= 2
 	logz("info", EMOJI_BOX, "Estimated space needed: %s (including post-processing)", formatBytes(maxSize))
 	return maxSize, nil
